@@ -1,6 +1,6 @@
 # Teste Técnico TIVIT
 
-Aplicação web em **Next.js (App Router)** com autenticação server-side, controle de acesso por role (`user` / `admin`), camada BFF via rotas internas (`/api/*`) e hidratação global de estado com Redux.
+Aplicação web em **Next.js (React Framework)** com autenticação server-side, controle de acesso por role (`user` / `admin`), camada BFF via rotas internas (`/api/*`) e hidratação global de estado com Redux.
 
 O projeto foi estruturado para demonstrar:
 
@@ -13,7 +13,7 @@ O projeto foi estruturado para demonstrar:
 
 ## Stack técnica
 
-- **Next.js 16.2.1** (App Router)
+- **Next.js 16.2.1** (React Framework)
 - **React 19**
 - **TypeScript 5**
 - **Redux Toolkit + React Redux**
@@ -132,6 +132,60 @@ O arquivo `src/proxy.ts` aplica guardas de acesso:
 
 ---
 
+## Por que usar SID e `session-store` no servidor
+
+### O que é o SID
+
+`SID` (Session ID) é um identificador opaco e único da sessão.
+
+Neste projeto, o browser **não armazena o token JWT real**. Ele armazena apenas:
+
+- `sid` (id da sessão)
+- `sid-role` (role da sessão)
+
+Com isso, o frontend nunca recebe o token de autenticação em `localStorage`, `sessionStorage` ou estado global. O token fica somente no servidor.
+
+### O que é o `session-store`
+
+O arquivo `src/lib/session-store.ts` implementa um repositório de sessões no servidor usando um `Map<string, ServerSession>`.
+
+Cada entrada do `Map` contém:
+
+- `sid`
+- `token`
+- `role`
+- `expiresAt` (TTL)
+
+Quando uma rota interna precisa chamar a API externa, ela resolve o `sid` do cookie, busca a sessão no `Map` e recupera o token server-side para montar o header `Authorization`.
+
+### Por que esse modelo é útil
+
+- reduz exposição de credenciais no browser;
+- facilita revogação de sessão (basta remover do store);
+- simplifica controles de segurança;
+- mantém o frontend desacoplado do formato/token real de autenticação.
+
+### Por que usar Redis (ou storage compartilhado) em produção
+
+O `Map` em memória funciona bem para desenvolvimento e execução em instância única, mas tem limitações em produção:
+
+1. **não é compartilhado entre instâncias**
+2. **perde dados ao reiniciar processo/deploy**
+3. **não suporta distribuição** de forma robusta
+
+Em produção, recomenda-se usar Redis (ou equivalente) para que:
+
+- todas as instâncias da aplicação leiam a mesma sessão;
+- a sessão sobreviva a restart de processo;
+- seja possível escalar sem quebrar autenticação.
+
+Resumo prático:
+
+- **Dev/PoC**: `Map` em memória é simples e suficiente.
+- **Produção**: storage compartilhado (ex.: Redis) é o caminho correto.
+
+---
+
 ## Como os dados são processados
 
 ## Camada BFF (`/api/*`)
@@ -184,7 +238,7 @@ Isso mantém o estado consistente entre cookies, sessão server-side e UI.
 src/
 	app/
 		api/                 # BFF e endpoints internos
-		auth-redirect/       # rota de login com redirect por role
+		auth-redirect/       # rota server-side de login com redirect por role
 		admin/               # página protegida de admin
 		user/                # página protegida de user
 		login/               # página de login
@@ -263,7 +317,3 @@ npm run start
 - revise credenciais de teste.
 
 ---
-
-## Licença
-
-Uso interno para avaliação técnica.
