@@ -94,8 +94,9 @@ Essa rota:
 
 1. chama `loginUser()` (`src/lib/api/auth.ts`), que consulta `POST /fake/token`;
 2. recebe `access_token`;
-3. extrai a role (`user`/`admin`) a partir do payload do JWT;
-4. cria sessão server-side (`createSession()`);
+3. extrai a role (`user`/`admin`) e o `exp` a partir do payload do JWT;
+4. converte o `exp` para `expiresAt` em milissegundos;
+5. cria sessão server-side (`createSession()`) usando esse tempo de expiração;
 5. redireciona para `/user` ou `/admin`.
 
 ### 2) Sessão
@@ -112,7 +113,9 @@ A sessão é composta por:
 
 Implementação: `src/lib/session-store.ts`.
 
-TTL atual da sessão: **24h**.
+O TTL atual da sessão e dos cookies é derivado do campo `exp` do JWT.
+
+Se o token não vier com `exp`, o código usa um fallback de 24h para evitar quebra do fluxo.
 
 ### 3) Autorização nas rotas protegidas
 
@@ -157,6 +160,32 @@ Cada entrada do `Map` contém:
 - `expiresAt` (TTL)
 
 Quando uma rota interna precisa chamar a API externa, ela resolve o `sid` do cookie, busca a sessão no `Map` e recupera o token server-side para montar o header `Authorization`.
+
+### Por que multiplicar `exp` por `1000`
+
+No padrão JWT, o campo `exp` é representado em **segundos desde 1 de janeiro de 1970 (Unix timestamp)**.
+
+Já no JavaScript, APIs como `Date.now()` e valores de tempo usados internamente na aplicação trabalham em **milissegundos**.
+
+Por isso, quando o payload vem assim:
+
+```text
+{ sub: 'user', exp: 1774151970 }
+```
+
+o código converte para milissegundos fazendo:
+
+```ts
+expiresAt = decodedPayload.exp * 1000;
+```
+
+Sem essa multiplicação, o valor seria interpretado como se já estivesse em milissegundos, fazendo a sessão expirar muito antes do correto.
+
+Resumo:
+
+- `exp` no JWT → segundos
+- `Date.now()` no JavaScript → milissegundos
+- conversão necessária → `exp * 1000`
 
 ### Por que esse modelo é útil
 

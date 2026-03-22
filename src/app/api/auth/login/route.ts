@@ -12,7 +12,8 @@ export async function POST(request: NextRequest) {
 
     await createSession({
       token: authResponse.token,
-      role: authResponse.role as 'user' | 'admin',
+      role: authResponse.role,
+      expiresAt: authResponse.expiresAt,
     });
 
     let userData = null;

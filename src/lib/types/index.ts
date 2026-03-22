@@ -5,7 +5,8 @@ export interface AuthApiResponse {
 
 export interface AuthResponse {
   token: string;
-  role: string;
+  role: 'user' | 'admin';
+  expiresAt: number;
 }
 
 export interface ApiResponse<T> {

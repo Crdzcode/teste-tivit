@@ -9,8 +9,6 @@ export interface ServerSession {
   expiresAt: number;
 }
 
-const SESSION_TTL_MS = 1000 * 60 * 60 * 24;
-
 declare global {
   var __tivitSessions: Map<string, ServerSession> | undefined;
 }
@@ -20,13 +18,17 @@ if (!global.__tivitSessions) {
   global.__tivitSessions = sessionStore;
 }
 
-export function createServerSession(input: { token: string; role: SessionRole }): ServerSession {
+export function createServerSession(input: {
+  token: string;
+  role: SessionRole;
+  expiresAt: number;
+}): ServerSession {
   const sid = randomUUID();
   const session: ServerSession = {
     sid,
     token: input.token,
     role: input.role,
-    expiresAt: Date.now() + SESSION_TTL_MS,
+    expiresAt: input.expiresAt,
   };
 
   sessionStore.set(sid, session);

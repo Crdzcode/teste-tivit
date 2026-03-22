@@ -11,7 +11,8 @@ export async function POST(request: NextRequest) {
     const authResponse = await loginUser({ username, password });
     await createSession({
       token: authResponse.token,
-      role: authResponse.role as 'user' | 'admin',
+      role: authResponse.role,
+      expiresAt: authResponse.expiresAt,
     });
 
     const redirectUrl = authResponse.role === 'admin' ? '/admin' : '/user';
