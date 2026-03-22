@@ -53,7 +53,7 @@ export default function AdminPage() {
             Painel administrativo
           </p>
           <h1 className="mt-4 font-display text-3xl font-semibold text-app-fg sm:text-4xl">
-            Governança e reports de {data.data.name}
+            Dashboard de {data.data.name}
           </h1>
           <p className="mt-4 max-w-2xl text-base leading-8 text-app-muted">
             {data.message}
@@ -104,10 +104,10 @@ export default function AdminPage() {
       <section className="space-y-6">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.28em] text-app-muted">
-            Reports carregados do slice admin
+            Reports
           </p>
           <h2 className="font-display text-3xl font-semibold text-app-fg">
-            Lista interativa de relatórios
+            Lista de relatórios
           </h2>
         </div>
 

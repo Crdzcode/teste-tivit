@@ -95,12 +95,6 @@ export default function UserPage() {
               <p className="text-xs uppercase tracking-[0.28em]">Email</p>
               <p className="mt-2 text-base font-medium text-app-fg break-all">{data.data.email}</p>
             </div>
-            <div className="rounded-[1.4rem] bg-gradient-to-br from-accent-soft to-surface-soft p-4 shadow-neo-inset">
-              <p className="text-xs uppercase tracking-[0.28em] text-app-muted">Observação</p>
-              <p className="mt-2 text-base text-app-fg">
-                O conteúdo desta área é carregado apenas após a sessão protegida ser validada e o slice do usuário ser hidratado.
-              </p>
-            </div>
           </div>
         </SurfaceCard>
       </section>
