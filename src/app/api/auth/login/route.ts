@@ -15,7 +15,6 @@ export async function POST(request: NextRequest) {
       role: authResponse.role as 'user' | 'admin',
     });
 
-    // Orquestração: buscar dados da role
     let userData = null;
     let adminData = null;
     if (authResponse.role === 'user') {
@@ -30,7 +29,7 @@ export async function POST(request: NextRequest) {
       userData,
       adminData,
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
   }
 }

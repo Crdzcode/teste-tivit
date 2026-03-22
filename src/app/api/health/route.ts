@@ -5,7 +5,7 @@ export async function GET() {
   try {
     const data = await getHealth();
     return NextResponse.json(data);
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Health check failed' }, { status: 500 });
   }
 }

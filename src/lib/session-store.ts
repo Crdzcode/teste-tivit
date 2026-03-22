@@ -9,10 +9,9 @@ export interface ServerSession {
   expiresAt: number;
 }
 
-const SESSION_TTL_MS = 1000 * 60 * 60 * 24; // 24h
+const SESSION_TTL_MS = 1000 * 60 * 60 * 24;
 
 declare global {
-  // eslint-disable-next-line no-var
   var __tivitSessions: Map<string, ServerSession> | undefined;
 }
 

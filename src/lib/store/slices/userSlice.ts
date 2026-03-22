@@ -26,7 +26,7 @@ export const fetchUserData = createAsyncThunk<UserData>(
       }
       const data = await response.json();
       return data;
-    } catch (error) {
+    } catch {
       return rejectWithValue('Falha ao buscar dados de usuário.');
     }
   }

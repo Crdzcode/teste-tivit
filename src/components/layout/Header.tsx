@@ -1,13 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import SurfaceCard from '@/components/common/SurfaceCard';
 import ThemeToggle from '@/components/theme/ThemeToggle';
 import { RootState } from '@/lib/store';
-import { cn } from '@/lib/utils/cn';
 
 export default function Header() {
   const pathname = usePathname();
@@ -20,21 +19,11 @@ export default function Header() {
 
   const authenticated = !!(user || admin);
   const role = user ? 'user' : admin ? 'admin' : null;
-  const name = user ? user.data.name : admin ? admin.data.name : '';
 
   const effectiveRole = role ?? sessionRole;
 
-  const navigation = useMemo(
-    () => [
-      { href: '/user', label: 'User', visible: effectiveRole === 'user' },
-      { href: '/admin', label: 'Admin', visible: effectiveRole === 'admin' },
-    ],
-    [effectiveRole]
-  );
-
   useEffect(() => {
     if (role) {
-      setSessionRole(role);
       return;
     }
 

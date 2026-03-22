@@ -41,7 +41,7 @@ export async function setSessionCookie(sid: string) {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',
-    maxAge: 60 * 60 * 24, // 1 dia
+    maxAge: 60 * 60 * 24,
     path: '/',
   });
 }

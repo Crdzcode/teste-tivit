@@ -16,12 +16,15 @@ export async function POST(request: NextRequest) {
 
     const redirectUrl = authResponse.role === 'admin' ? '/admin' : '/user';
     return NextResponse.redirect(new URL(redirectUrl, request.url));
-  } catch (error: any) {
+  } catch (error: unknown) {
     let errorMsg = 'Erro desconhecido ao fazer login';
-    if (error && typeof error === 'object' && typeof error.message === 'string') {
+    if (
+      error &&
+      typeof error === 'object' &&
+      'message' in error &&
+      typeof error.message === 'string'
+    ) {
       if (error.message.startsWith('Login failed:')) {
-        // Erro de autenticação vindo da API, pode conter mensagem customizada
-        // Exemplo: "Login failed: 401 Unauthorized - Detalhe da API"
         const match = error.message.match(/Login failed: (\d+) ([^-]+)(?: - (.*))?/);
         if (match) {
           const [, code, status, apiMsg] = match;
